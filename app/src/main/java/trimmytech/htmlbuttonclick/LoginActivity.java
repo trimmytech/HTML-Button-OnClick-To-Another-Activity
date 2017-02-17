@@ -26,33 +26,13 @@ import java.io.File;
 public class LoginActivity extends AppCompatActivity {
 
 
-    public class WebAppInterface {
-        Context mContext;
-
-        /** Instantiate the interface and set the context */
-        WebAppInterface(Context c) {
-            mContext = c;
-        }
-
-        @JavascriptInterface
-        public void moveToNextScreen() {
-            Intent intRef=new Intent(LoginActivity.this,SecondActivity.class);
-            startActivity(intRef);
-            //Log.e("banji", "Clicked");
-        }
-    }
-
+    private static final int FILECHOOSER_RESULTCODE = 2888;
+    final Activity activity = this;
+    public Uri imageUri;
     //private Button button;
     private WebView webView;
-
-    final Activity activity = this;
-
-    public Uri imageUri;
-
-    private static final int FILECHOOSER_RESULTCODE   = 2888;
     private ValueCallback<Uri> mUploadMessage;
     private Uri mCapturedImageURI = null;
-
     private View adview;
 
     @Override
@@ -95,10 +75,9 @@ public class LoginActivity extends AppCompatActivity {
         webView.addJavascriptInterface(new WebAppInterface(this), "ok");
 
 
-
         //Load url in webview
         webView.loadUrl(webViewUrl);
-        Log.e("beejay", "I love "+webView.getTitle());
+        Log.e("beejay", "I love " + webView.getTitle());
 
         // Define Webview manage classes
         startWebView();
@@ -106,7 +85,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void startWebView() {
-
 
 
         //Create new webview Client to show progress dialog
@@ -123,8 +101,7 @@ public class LoginActivity extends AppCompatActivity {
                 // else all webview links will open in webview browser
 
 
-                if(url.contains("3j3j3j2i3j2i3ji2"))
-                {
+                if (url.contains("3j3j3j2i3j2i3ji2")) {
 
                     // Could be cleverer and use a regex
                     //Open links in new browser
@@ -145,9 +122,8 @@ public class LoginActivity extends AppCompatActivity {
             }
 
 
-
             //Show loader on url load
-            public void onLoadResource (WebView view, String url) {
+            public void onLoadResource(WebView view, String url) {
 
                 // if url contains string androidexample
                 // Then show progress  Dialog
@@ -164,13 +140,13 @@ public class LoginActivity extends AppCompatActivity {
             // Called when all page resources loaded
             public void onPageFinished(WebView view, String url) {
 
-                try{
+                try {
                     // Close progressDialog
                     if (progressDialog.isShowing()) {
                         progressDialog.dismiss();
                         progressDialog = null;
                     }
-                }catch(Exception exception){
+                } catch (Exception exception) {
                     exception.printStackTrace();
                 }
             }
@@ -178,20 +154,18 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
-
         // implement WebChromeClient inner class
         // we will define openFileChooser for select file from camera
         webView.setWebChromeClient(new WebChromeClient() {
 
             // openFileChooser for Android 3.0+
-            public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType){
+            public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType) {
                 /**updated, out of the IF **/
                 mUploadMessage = uploadMsg;
                 /**updated, out of the IF **/
 
 
-
-                try{
+                try {
                     File imageStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "AndroidExampleFolder");
                     if (!imageStorageDir.exists()) {
                         imageStorageDir.mkdirs();
@@ -208,18 +182,17 @@ public class LoginActivity extends AppCompatActivity {
                     i.setType("image/*");
 
                     Intent chooserIntent = Intent.createChooser(i, "Image Chooser");
-                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Parcelable[] { captureIntent });
+                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Parcelable[]{captureIntent});
 
                     startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
-                }
-                catch(Exception e){
-                    Toast.makeText(getBaseContext(), "Camera Exception:"+e, Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Toast.makeText(getBaseContext(), "Camera Exception:" + e, Toast.LENGTH_LONG).show();
                 }
                 //}
             }
 
             // openFileChooser for Android < 3.0
-            public void openFileChooser(ValueCallback<Uri> uploadMsg){
+            public void openFileChooser(ValueCallback<Uri> uploadMsg) {
                 openFileChooser(uploadMsg, "");
             }
 
@@ -237,6 +210,7 @@ public class LoginActivity extends AppCompatActivity {
                 //Toast.makeText(getBaseContext(), cm.message()+" :message", Toast.LENGTH_LONG).show();
                 return true;
             }
+
             public void onConsoleMessage(String message, int lineNumber, String sourceID) {
                 //Log.d("androidruntime", "Per c�nsola: " + message);
                 //Toast.makeText(getBaseContext(), message+":message", Toast.LENGTH_LONG).show();
@@ -248,25 +222,21 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
-
     }
-
-    // Return here when file selected from camera or from SDcard
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode,
                                     Intent intent) {
 
-        if(requestCode==FILECHOOSER_RESULTCODE)
-        {
+        if (requestCode == FILECHOOSER_RESULTCODE) {
 
             if (null == this.mUploadMessage) {
                 return;
             }
 
-            Uri result=null;
+            Uri result = null;
 
-            try{
+            try {
                 if (resultCode != RESULT_OK) {
 
                     result = null;
@@ -276,10 +246,8 @@ public class LoginActivity extends AppCompatActivity {
                     // retrieve from the private variable if the intent is null
                     result = intent == null ? mCapturedImageURI : intent.getData();
                 }
-            }
-            catch(Exception e)
-            {
-                Toast.makeText(getApplicationContext(), "activity :"+e, Toast.LENGTH_LONG).show();
+            } catch (Exception e) {
+                Toast.makeText(getApplicationContext(), "activity :" + e, Toast.LENGTH_LONG).show();
             }
 
             mUploadMessage.onReceiveValue(result);
@@ -289,16 +257,36 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    // Open previous opened link from history on webview when back button pressed
+    // Return here when file selected from camera or from SDcard
 
     @Override
     // Detect when the back button is pressed
     public void onBackPressed() {
-        if(webView.canGoBack()) {
+        if (webView.canGoBack()) {
             webView.goBack();
         } else {
             // Let the system handle the back button
             super.onBackPressed();
+        }
+    }
+
+    // Open previous opened link from history on webview when back button pressed
+
+    public class WebAppInterface {
+        Context mContext;
+
+        /**
+         * Instantiate the interface and set the context
+         */
+        WebAppInterface(Context c) {
+            mContext = c;
+        }
+
+        @JavascriptInterface
+        public void moveToNextScreen() {
+            Intent intRef = new Intent(LoginActivity.this, SecondActivity.class);
+            startActivity(intRef);
+            //Log.e("banji", "Clicked");
         }
     }
 
